@@ -7,7 +7,7 @@ services:
     #      context: .
     #      dockerfile: Dockerfile.ce
     ports:
-      - "8000:8000"
+      - "8021:8000"
     volumes:
       - ./zep.yaml:/app/zep.yaml
     environment:
@@ -37,11 +37,11 @@ services:
     volumes:
       - zep-db:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5421:5432"
   graphiti:
     image: zepai/graphiti:0.3
     ports:
-      - "8003:8003"
+      - "8221:8003"
     env_file:
       - .env
     networks:
@@ -78,8 +78,8 @@ services:
       retries: 20
       start_period: 3s
     ports:
-      - "7474:7474" # HTTP
-      - "7687:7687" # Bolt
+      - "7421:7474" # HTTP
+      - "7621:7687" # Bolt
     volumes:
       - neo4j_data:/data
     environment:
