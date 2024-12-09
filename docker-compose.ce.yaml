@@ -42,8 +42,6 @@ services:
     image: zepai/graphiti:0.3
     ports:
       - "8221:8003"
-    env_file:
-      - .env
     networks:
       - zep-network
     healthcheck:
