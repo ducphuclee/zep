@@ -9,7 +9,7 @@ services:
     ports:
       - "8021:8000"
     volumes:
-      - ./zep.yaml:/app/zep.yaml
+      - /home/ubuntu/configs/zep/zonfig/zep.yaml:/app/zep.yaml
     environment:
       - ZEP_CONFIG_FILE=zep.yaml
     networks:
