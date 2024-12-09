@@ -15,8 +15,6 @@ services:
     networks:
       - zep-network
     depends_on:
-      graphiti:
-        condition: service_healthy
       db:
         condition: service_healthy
   db:
