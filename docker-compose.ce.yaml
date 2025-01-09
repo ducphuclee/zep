@@ -7,14 +7,14 @@ services:
     #      context: .
     #      dockerfile: Dockerfile.ce
     ports:
-      - "8021:8000"
+      - "8000:8000"
     volumes:
-      - /home/ubuntu/configs/zep/zonfig/zep.yaml:/app/zep.yaml
+      - ./zep.yaml:/app/zep.yaml
     environment:
       - ZEP_CONFIG_FILE=zep.yaml
-    networks:
-      - zep-network
     depends_on:
+      graphiti:
+        condition: service_healthy
       db:
         condition: service_healthy
   db:
@@ -25,8 +25,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    networks:
-      - zep-network
     healthcheck:
       test: ["CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres"]
       interval: 5s
@@ -35,11 +33,36 @@ services:
     volumes:
       - zep-db:/var/lib/postgresql/data
     ports:
-      - "5421:5432"
+      - "5432:5432"
+  graphiti:
+    image: zepai/graphiti:0.3
+    ports:
+      - "8003:8003"
+    env_file:
+      - .env
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8003/healthcheck')",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MODEL_NAME=gpt-4o-mini
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=zepzepzep
+      - PORT=8003
   neo4j:
     image: neo4j:5.22.0
-    networks:
-      - zep-network
     healthcheck:
       test: wget http://localhost:7687 || exit 1
       interval: 1s
@@ -47,8 +70,8 @@ services:
       retries: 20
       start_period: 3s
     ports:
-      - "7421:7474" # HTTP
-      - "7621:7687" # Bolt
+      - "7474:7474" # HTTP
+      - "7687:7687" # Bolt
     volumes:
       - neo4j_data:/data
     environment:
@@ -56,6 +79,3 @@ services:
 volumes:
   neo4j_data:
   zep-db:
-networks:
-  zep-network:
-    driver: bridge
