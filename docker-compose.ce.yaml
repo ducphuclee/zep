@@ -9,7 +9,7 @@ services:
     ports:
       - "8910:8000"
     volumes:
-      - ./:/app/
+      - /root/zep/repo/zep/zep.yaml:/app/zep.yaml
     environment:
       - ZEP_CONFIG_FILE=zep.yaml
     depends_on:
@@ -31,7 +31,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - zep-db:/var/lib/postgresql/data
+      - /root/zep/zep-db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
   graphiti:
@@ -73,9 +73,6 @@ services:
       - "7474:7474" # HTTP
       - "7687:7687" # Bolt
     volumes:
-      - neo4j_data:/data
+      - /root/zep/neo4j_data:/data
     environment:
       - NEO4J_AUTH=neo4j/zepzepzep
-volumes:
-  neo4j_data:
-  zep-db:
